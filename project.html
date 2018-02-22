@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Vue Project</title>
+	<link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+	<style>
+		.heading{
+			text-align: center;
+			margin-bottom: 40px;
+		}
+		.story{
+			border-right-width: 3px;
+			border-right-color: gray;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<h3 class="heading">Create, Delete, Voting, Sorting and Search in Vue</h3>
+		<div class="row">
+			<div class="col-md-4 story">
+				<h5>Add Movie</h5>
+				<div class="form-group">
+					<input type="text" class="form-control" v-model="newMovie.name" placeholder="Add Movie...">
+				</div>
+				<button @click="addMovie" class="btn btn-success">Add</button>
+			</div>
+			<div class="col-md-8">
+				<h5>Search results:</h5>
+				<input type="text" class="form-control" placeholder="Search By Movie Title..." v-model="query">
+				<br>
+				<table class="table table-stripped">
+					<thead>
+						<tr>
+							<th>Movie Lists</th>
+							<th>Vote Count</th>
+							<th>Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="movie in search">
+							<td>{{ movie.name }}</td>
+							<td>{{ movie.vote }}</td>
+							<td>
+								<button @click="movie.vote++" class="btn btn-success">Vote</button>
+								<button @click="removeMovie(movie)" class="btn btn-danger">X</button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-6">
+				<pre>{{ $data | json }}</pre>
+				<pre>{{ winner }}</pre>
+				<pre>{{ search }}</pre>
+			</div>
+		</div>
+	</div>
+	<script src="../node_modules/jquery/dist/jquery.min.js"></script>
+	<script src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+	<script src="../node_modules/vue/dist/vue.min.js"></script>
+	<script>
+		new Vue({
+			el: '.container',
+			data: {
+				newMovie: { name: '', vote: ''},
+				movies: [],
+				query: ''
+			},
+			methods: {
+				addMovie: function(){
+					var movieName = this.newMovie.name.trim();
+					if (movieName) {
+						this.movies.push({ name: movieName, vote: 0 });
+						this.newMovie = { name: '', vote: ''}
+					}
+				},
+				removeMovie: function(movie){
+					// find story
+					var index = this.movies.indexOf(movie);
+					// delete it
+					this.movies.splice(index, 1)
+					
+				}
+			},
+			computed: {
+				//Sorting Voting 
+				winner: function(){
+					var sorting = this.movies.sort(function (a, b) {
+						return b.vote - a.vote;
+					});
+					return sorting[0];
+				},
+
+				//Search Result
+				search: function(){
+					var query = this.query;
+					return this.movies.filter(function (movie) {
+						return movie.name.includes(query)
+					})
+				}
+			} 
+		})
+	</script>
+</body>
+</html>
